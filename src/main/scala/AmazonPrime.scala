@@ -50,6 +50,12 @@ object AmazonPrime {
     return finalv
   }
 
+  def AdminQuery():(Int)={
+      println("1- Type something")
+      val selec = readInt()
+      return selec
+    }
+
   def UpdatePassword(usname: String): Unit = {
     println("Enter Current password:")
     val CurPassword = readLine
@@ -152,12 +158,6 @@ object AmazonPrime {
 
 
   }
-
-
-  ////////////////////////////////////////////////////
-
-
-
   ///////////////////////////*******************************************************************************///////////////
   def main(args: Array[String]) {
 
