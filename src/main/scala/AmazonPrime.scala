@@ -121,7 +121,7 @@ def firstPage(){
         }
       }
       else if (select == 2) {
-        println("View Movies has greater than entered Rating value :" +Console.YELLOW + "Enter Rating Between (1-10)" + Console.RESET+ )
+        println("View Movies has greater than entered Rating value :" +Console.YELLOW + "Enter Rating Between (1-10)" + Console.RESET)
         val rate = readLine()
 
         val df1 = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
@@ -219,6 +219,17 @@ def firstPage(){
       else if (select == 3) {
          User(usname)
       }
+
+      else if (select==4)
+        {
+
+          spark.sql("CREATE SCHEMA IF NOT EXISTS P1;")
+          spark.sql("DROP table IF EXISTS Prime")
+          spark.sql(sqlText = "create table IF NOT EXISTS Prime(ID string, Type string, Title string,	Director string ,Cast string  , Country string, Date_Added string, release_year  string,Rating string,Duration string, Genre string, Description string) row format delimited fields terminated by ',' collection items terminated by '|' ")
+          spark.sql("LOAD DATA  INPATH 'D:\\Revature\\Project1\\Project1\\AmazonPrimeMovies\\input\\ap.csv' INTO TABLE Prime")
+          spark.sql("SELECT * FROM Prime").show()
+
+        }
 
     }
   }
