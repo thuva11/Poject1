@@ -79,6 +79,7 @@ def firstPage(){
       preparedStmt.execute
       preparedStmt.close
       println("User Created Successfully")
+      Userlogin()
     }
 
     else
@@ -107,8 +108,7 @@ def firstPage(){
       println("4 - Percentage of releases based Genre in Year ?")
       println("5 - List movies by Type , Genre , Year  ?")
       println("6 - List Releases between particular years  Range ?")
-      println("")
-      println(Console.YELLOW+ "0 - Back to Admin Dashboard: "+Console.RESET)
+          println(Console.YELLOW+ "0 - Back to Admin Dashboard: "+Console.RESET)
       println("Select between "+Console.GREEN+"1- 6 "+Console.RESET+"to Query or Select 0 to Go Back to Admin Dashboard"+Console.RESET)
       val select = readInt()
 
@@ -134,7 +134,7 @@ def firstPage(){
         }
       }
       else if (select == 2) {
-        println("View Movies has greater than entered Rating value :" +Console.YELLOW + "Enter Rating Between (1-10)" + Console.RESET)
+        println("View Movies has greater than entered Rating value :" +Console.YELLOW + " Enter Rating Between (1-10)" + Console.RESET)
         val rate = readLine()
 
         val df1 = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
