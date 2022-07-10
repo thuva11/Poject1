@@ -50,7 +50,7 @@ object AmazonPrime {
     return finalv
   }
 def firstPage(){
-  print(md5("toor"))
+
 
   println()
   println(Console.GREEN +"=======================================")
@@ -122,10 +122,10 @@ def firstPage(){
         df.createOrReplaceTempView("YearTvshow")
         spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type ='" + qurytype + "' ;").show()
 
-        println("Do you want to export as json file?\n 0 - No \n1 - Yes")
+        println("Do you want to export as json file?\n 1 - Yes \n0 - No")
         val x = readInt()
         x match {
-          case 0 => "Okay"
+          case 0 => "Ignored"
           case 1 => {
             spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type ='" + qurytype + "' ;").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$year-Releses-$qurytype")
             println(s"Saved Successfully")
@@ -141,10 +141,10 @@ def firstPage(){
         df1.createOrReplaceTempView("RateView")
         spark.sql("SELECT ID, Title,Rating, Genre FROM RateView where Rating >'" + rate + "';").show()
 
-        println("Do you want to export as json file?\n 0 - No \n1 - Yes")
+        println("Do you want to export as json file?\n 1 - Yes \n0 - No")
         val x = readInt()
         x match {
-          case 0 => "Okay"
+          case 0 => "Ignored"
           case 1 => {
             spark.sql("SELECT ID, Title,Rating, Genre FROM RateView where Rating >'" + rate + "';").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$rate-Rating")
             println(s"Saved Successfully")
@@ -153,15 +153,15 @@ def firstPage(){
         }
       }
       else if (select == 3) {
-
+        println(Console.GREEN+" This Query is going to list Release count of each Year"+Console.RESET)
         val df2 = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
         df2.createOrReplaceTempView("YearReleaseCount")
         spark.sql("SELECT release_year as ReleaseYear , count(*) as CountPerYear FROM YearReleaseCount GROUP BY release_year order by count(*) Desc  ;").show()
 
-        println("Do you want to export as json file?\n 0 - No \n1 - Yes")
+        println("Do you want to export as json file?\n 1 - Yes \n0 - No")
         val x = readInt()
         x match {
-          case 0 => "Okay"
+          case 0 => "Ignored"
           case 1 => {
             spark.sql("SELECT release_year as ReleaseYear , count(*) as CountPerYear FROM YearReleaseCount GROUP BY release_year order by count(*) Desc  ;").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/YearReleaseCount ")
             println(s"Saved Successfully")
@@ -171,7 +171,8 @@ def firstPage(){
       }
 
       else if (select == 4) {
-        println("Load  Percentage of Releases Genre in Year. ")
+        println(Console.GREEN+" This section is going get Percentage of entered Genre in entered Year "+Console.RESET)
+        //println("Load  Percentage of Releases Genre in Year. ")
         println("Enter year")
         val year = readInt()
         println("Type Genre -  (Eg -Drama , Comedy, Action etc)")
@@ -186,6 +187,7 @@ def firstPage(){
       }
 
       else if (select == 5) {
+        println(Console.GREEN+" This section is going list List results based on Entered Year , Genre and Type "+Console.RESET)
         println("Enter release year")
         val year = readInt()
         println("Which Genre -  (Eg -Drama , Comedy, Action) ")
@@ -199,6 +201,7 @@ def firstPage(){
       }
       else if (select==6)
       {
+        println(Console.GREEN+" This section is going list Releases in Entered period"+Console.RESET)
         println("Enter First year : ")
         val pyear = readInt()
         println("Enter  Second year : ")
