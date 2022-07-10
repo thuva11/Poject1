@@ -10,9 +10,7 @@ import java.sql.ResultSet
 import org.apache.spark.sql.SparkSession
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
-
 import java.security.MessageDigest
-
 object AmazonPrime {
 
   var ses = true
@@ -49,7 +47,42 @@ object AmazonPrime {
     var finalv = value.mkString("")
     return finalv
   }
+def firstPage(){
 
+  println()
+  println(Console.GREEN +"=======================================")
+  println("Welcome to Amazon Prime Movies Dataset")
+  println("======================================"+ Console.RESET)
+  println(Console.YELLOW + "If you are Admin Please Login with your Credential" + Console.RESET)
+  println("1 - Login : ")
+  println("2 - Signup " +Console.YELLOW + "(Only Users Can Signup) : " +Console.RESET)
+  println("0 - Exit")
+  val userinput = readInt
+
+  try {
+    val statement = connection.createStatement()
+
+    if (userinput ==1) {
+      Userlogin()
+    }
+
+    else if (userinput == 2) {
+      val (f, u, p) = CreateUser(userinput)
+      val insertsql = s"insert into user (name,type, username, password) values (?,'User',?,?)"
+      val preparedStmt: PreparedStatement = connection.prepareStatement(insertsql)
+      preparedStmt.setString(1, f)
+      preparedStmt.setString(2, u)
+      preparedStmt.setString(3, p)
+      preparedStmt.execute
+      preparedStmt.close
+      println("User Created Successfully")
+    }
+
+  } catch {
+    case e: Throwable => e.printStackTrace
+  }
+
+}
   def AdminQuery(usname2: String)={
 
 
@@ -81,14 +114,16 @@ object AmazonPrime {
         x match {
           case 0 => "Okay"
           case 1 => {
-            spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type = 'TV Show';").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$year-ReleseTvShow")
+            spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type ='" + qurytype + "' ;").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$year-Releses-$qurytype")
             println(s"Saved Successfully")
           }
           case _ => println("Invalid input")
         }
       }
       else if (select == 2) {
-        val rate = 8
+        println("View Movies has greater than entered Rating value :" +Console.YELLOW + "Enter Rating Between (1-10)" + Console.RESET+ )
+        val rate = readLine()
+
         val df1 = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
         df1.createOrReplaceTempView("RateView")
         spark.sql("SELECT ID, Title,Rating, Genre FROM RateView where Rating >'" + rate + "';").show()
@@ -205,10 +240,12 @@ object AmazonPrime {
         val st2 = connection.createStatement()
         var updatesql = "UPDATE user SET password = '" + hashedNewPw + "' WHERE username = '" + usname + "'"
         st2.executeUpdate(updatesql)
+        println("Password Changed Successfully Login Back")
+        firstPage()
       }
    else {
-        println("Incorrect Password")
-
+        println("Incorrect Password , Please try Again")
+        UpdatePassword(usname)
       }
     }
   }
@@ -216,7 +253,7 @@ object AmazonPrime {
     println("Select options : ")
     println("1 - Run Query : \n" +
       "2 - Update Admiin Password : " + "\n" +
-      "3 - Logout : ")
+      "9 - Logout : ")
     val admin_choice = readInt()
     if (admin_choice==2) {
       UpdatePassword(usName)
@@ -225,13 +262,18 @@ object AmazonPrime {
       {
         AdminQuery(usName)
       }
+    else if (admin_choice==9)
+    {
+      firstPage()
+
+    }
   }
   def User(usName:String) {
 
     println("Select an option....")
     println("1 - Search Movies and TV Shows")
     println("2 - Change Password")
-    println("3 - Logout")
+    println("9 - Logout")
     println("Enter your choice:")
 
     val user_Choice = readInt()
@@ -243,12 +285,13 @@ object AmazonPrime {
       UpdatePassword(usName)
     }
 
-    else if(user_Choice==3)
+    else if(user_Choice==9)
       {
 
-
+      firstPage()
       }
-
+    else
+      {println( "Invalid Input ")}
   }
 
   def CreateUser(options: Int) = {
@@ -261,6 +304,7 @@ object AmazonPrime {
     val pword = readLine()
     val pwhashed=md5(pword)
     (name, uname, pwhashed)
+
   }
 
   /////////////////////////////////
@@ -309,6 +353,7 @@ object AmazonPrime {
         else
         {
           println("Incorrect Credentials.")
+          firstPage()
         }
       }
     }
@@ -321,40 +366,8 @@ object AmazonPrime {
   ///////////////////////////*******************************************************************************///////////////
 
   def main(args: Array[String]) {
+    firstPage()
 
-    //println(md5("abc"))
-    println()
-    println(Console.GREEN +"=======================================")
-    println("Welcome to Amazon Prime Movies Dataset")
-    println("======================================"+ Console.RESET)
-    println(Console.YELLOW + "If you are Admin Please Login with your Credential" + Console.RESET)
-    println("1 - Login : ")
-    println("2 - Signup " +Console.YELLOW + "(Only Users Can Signup) : " +Console.RESET)
-    println("0 - Exit")
-    val userinput = readInt
-
-    try {
-      val statement = connection.createStatement()
-
-      if (userinput ==1) {
-        Userlogin()
-      }
-
-      else if (userinput == 2) {
-        val (f, u, p) = CreateUser(userinput)
-        val insertsql = s"insert into user (name,type, username, password) values (?,'User',?,?)"
-        val preparedStmt: PreparedStatement = connection.prepareStatement(insertsql)
-        preparedStmt.setString(1, f)
-        preparedStmt.setString(2, u)
-        preparedStmt.setString(3, p)
-        preparedStmt.execute
-        preparedStmt.close
-        println("User Created Successfully")
-      }
-
-    } catch {
-      case e: Throwable => e.printStackTrace
-    }
 
   }
 
