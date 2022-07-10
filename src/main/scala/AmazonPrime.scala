@@ -1,5 +1,6 @@
 
 import AmazonPrime.connection
+
 import java.beans.Statement
 import java.sql.DriverManager
 import java.sql.Connection
@@ -10,6 +11,7 @@ import java.sql.ResultSet
 import org.apache.spark.sql.SparkSession
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
+
 import java.security.MessageDigest
 object AmazonPrime {
 
@@ -48,6 +50,7 @@ object AmazonPrime {
     return finalv
   }
 def firstPage(){
+  print(md5("toor"))
 
   println()
   println(Console.GREEN +"=======================================")
@@ -104,12 +107,13 @@ def firstPage(){
       println("4 - Percentage of releases based Genre in Year ?")
       println("5 - List movies by Type , Genre , Year  ?")
       println("6 - List Releases between particular years  Range ?")
-      println("0 - Back to Admin Dashboard: ")
-      println("Select between 1 - 6 to Query or Select 0 to Go Back to Admin Dashboard")
+      println("")
+      println(Console.YELLOW+ "0 - Back to Admin Dashboard: "+Console.RESET)
+      println("Select between "+Console.GREEN+"1- 6 "+Console.RESET+"to Query or Select 0 to Go Back to Admin Dashboard"+Console.RESET)
       val select = readInt()
 
       if (select == 1) {
-
+        println(Console.GREEN+" This section is going list Movies or Tv shows based on your input Year and Type, Type refer TV show and Movies"+Console.RESET)
         println("Which year you want to pull : ")
         val year = readLine()
         println("Select Type :  TV Show or Movie")
@@ -391,7 +395,6 @@ def firstPage(){
   ///////////////////////////*******************************************************************************///////////////
 
   def main(args: Array[String]) {
-    md5("toor")
     firstPage()
 
 
