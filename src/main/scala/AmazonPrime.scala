@@ -153,10 +153,40 @@ object AmazonPrime {
       {
         Admin(usname2)
       }
-
+    }
     }
 
+  def UserQuery(usname: String)={
+
+    while (ses == true) {
+      println("1 - Search by Title")
+      println("2 - Search by Director")
+      println("3 - Back to Home")
+      val select = readInt()
+
+      if (select == 1) {
+
+
+        println("Please type name of Movie or TV Shows : ")
+        val name = readLine()
+        val df = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
+        df.createOrReplaceTempView("SearchMovie")
+        spark.sql("Select Title,Type, release_year, Genre , Description FROM SearchMovie where Title LIKE '%" + name + "%';").show()
+
+       }
+      else if (select == 2) {
+        println("Please type Director Name : ")
+        val dir = readLine()
+        val df = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
+        df.createOrReplaceTempView("SearchDirector")
+        spark.sql("Select Title,Type,Director, release_year, Genre , Description FROM SearchDirector where Director LIKE '%" + dir + "%';").show()
+      }
+      else if (select == 3) {
+         User(usname)
+      }
+
     }
+  }
 
   def UpdatePassword(usname: String): Unit = {
     println("Enter Current password:")
@@ -199,20 +229,26 @@ object AmazonPrime {
   def User(usName:String) {
 
     println("Select an option....")
-    println("1 - Search by title")
-    println("2 - Search by director")
-    println("3 - Change Password")
-    println("4 - Logout")
+    println("1 - Search Movies and TV Shows")
+    println("2 - Change Password")
+    println("3 - Logout")
     println("Enter your choice:")
 
     val user_Choice = readInt()
-    if (user_Choice==2) {
+    if (user_Choice==1)
+    {
+      UserQuery(usName)
+    }
+    else if (user_Choice==2) {
       UpdatePassword(usName)
     }
-    else if (user_Choice==1)
-    {
-      AdminQuery(usName)
-    }
+
+    else if(user_Choice==3)
+      {
+
+
+      }
+
   }
 
   def CreateUser(options: Int) = {
@@ -283,9 +319,10 @@ object AmazonPrime {
 
   }
   ///////////////////////////*******************************************************************************///////////////
+
   def main(args: Array[String]) {
 
-    println(md5("abc"))
+    //println(md5("abc"))
     println()
     println(Console.GREEN +"=======================================")
     println("Welcome to Amazon Prime Movies Dataset")
@@ -313,9 +350,7 @@ object AmazonPrime {
         preparedStmt.execute
         preparedStmt.close
         println("User Created Successfully")
-
       }
-
 
     } catch {
       case e: Throwable => e.printStackTrace
