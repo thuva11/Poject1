@@ -78,8 +78,16 @@ def firstPage(){
       println("User Created Successfully")
     }
 
+    else
+      {
+        println("Incorrect Input")
+
+      }
+
   } catch {
+
     case e: Throwable => e.printStackTrace
+      println("Incorrect ")
   }
 
 }
@@ -93,10 +101,11 @@ def firstPage(){
       println("1 - List Movies or TV Shows based on Released year and Type   ")
       println("2 - List Movies and TV Shows based on rating ? ")
       println("3 - How many released for Every Year ? ")
-      println("4 - Percentage of releases based Country in Year ?")
+      println("4 - Percentage of releases based Genre in Year ?")
       println("5 - List movies by Type , Genre , Year  ?")
-      println("6 - Back to Admin Dashboard: ")
-      println("Select between 1 - 5 to Query or Select 6 to Go Back to Admin Dashboard")
+      println("6 - List Releases between particular years  Range ?")
+      println("0 - Back to Admin Dashboard: ")
+      println("Select between 1 - 6 to Query or Select 0 to Go Back to Admin Dashboard")
       val select = readInt()
 
       if (select == 1) {
@@ -184,7 +193,21 @@ def firstPage(){
         df4.createOrReplaceTempView("threeQuery")
         spark.sql("SELECT Title, Director,Type,Cast, release_year, Genre  FROM threeQuery where Type  ='" + mtype + "' AND release_year ='" + year + "' AND Genre = '" + dbGenre + "';").show()
       }
-      else if (select == 6)
+      else if (select==6)
+      {
+        println("Enter First year : ")
+        val pyear = readInt()
+        println("Enter  Second year : ")
+        val nyear = readInt()
+
+        spark.sql("CREATE SCHEMA IF NOT EXISTS P1;")
+        spark.sql("DROP table IF EXISTS Prime")
+        spark.sql(sqlText = "create table IF NOT EXISTS Prime(ID string, Type string, Title string,	Director string ,Cast string  , Country string, Date_Added string, release_year  string,Rating string,Duration string, Genre string, Description string) row format delimited fields terminated by ',' collection items terminated by '|' stored as textfile")
+        spark.sql("LOAD DATA  INPATH 'D:/Revature/Project1/Project1/AmazonPrimeMovies/input/ap.csv' INTO TABLE Prime")
+        spark.sql("SELECT ID, Title, Director,Cast, release_year, Genre  FROM Prime where where release_year BETWEEN '" + pyear + "' AND '"+nyear+"' ").show()
+
+      }
+      else if (select == 0)
       {
         Admin(usname2)
       }
@@ -220,16 +243,7 @@ def firstPage(){
          User(usname)
       }
 
-      else if (select==4)
-        {
 
-          spark.sql("CREATE SCHEMA IF NOT EXISTS P1;")
-          spark.sql("DROP table IF EXISTS Prime")
-          spark.sql(sqlText = "create table IF NOT EXISTS Prime(ID string, Type string, Title string,	Director string ,Cast string  , Country string, Date_Added string, release_year  string,Rating string,Duration string, Genre string, Description string) row format delimited fields terminated by ',' collection items terminated by '|' ")
-          spark.sql("LOAD DATA  INPATH 'D:\\Revature\\Project1\\Project1\\AmazonPrimeMovies\\input\\ap.csv' INTO TABLE Prime")
-          spark.sql("SELECT * FROM Prime").show()
-
-        }
 
     }
   }
@@ -311,7 +325,7 @@ def firstPage(){
     val name = readLine()
     println("Enter User Name : ")
     val uname = readLine()
-    println("Enter password : ")
+    println("Enter Password : ")
     val pword = readLine()
     val pwhashed=md5(pword)
     (name, uname, pwhashed)
@@ -325,9 +339,9 @@ def firstPage(){
 
   def Userlogin(){
 
-    println("Enter username : ")
+    println("Enter Username : ")
     val username1 = readLine()
-    println("Enter password : ")
+    println("Enter Password : ")
     val password1 = readLine()
     val userpwhash=md5(password1)
 
@@ -377,6 +391,7 @@ def firstPage(){
   ///////////////////////////*******************************************************************************///////////////
 
   def main(args: Array[String]) {
+    md5("toor")
     firstPage()
 
 
