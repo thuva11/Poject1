@@ -79,7 +79,7 @@ def firstPage(){
       preparedStmt.execute
       preparedStmt.close
       println("User Created Successfully")
-      Userlogin()
+      firstPage()
     }
 
     else
