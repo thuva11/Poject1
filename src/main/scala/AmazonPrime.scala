@@ -127,7 +127,7 @@ def firstPage(){
         x match {
           case 0 => "Ignored"
           case 1 => {
-            spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type ='" + qurytype + "' ;").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$year-Releses-$qurytype")
+            spark.sql("SELECT ID, Title,Type, release_year, Genre FROM YearTvshow where release_year ='" + year + "' and Type ='" + qurytype + "' ;").write.format("org.apache.spark.sql.json").mode("overwrite").save(s"hdfs://localhost:9000/user/hive/JSONOutput/$year-Releses")
             println(s"Saved Successfully")
           }
           case _ => println("Invalid input")
@@ -135,6 +135,7 @@ def firstPage(){
       }
       else if (select == 2) {
         println("View Movies has greater than entered Rating value :" +Console.YELLOW + " Enter Rating Between (1-10)" + Console.RESET)
+        println("Rating :  ")
         val rate = readLine()
 
         val df1 = spark.read.format("csv").option("header", "true").load("hdfs://localhost:9000/user/hive/CSVInput/ap.csv")
@@ -375,7 +376,7 @@ def firstPage(){
         }
         else if(username1.equals(uname) && userpwhash.equals(userpw) && typeofuser.equals("Admin"))
         {
-          println("Successful Login! " + Console.YELLOW + "Welcome Admin " + namefromdb + Console.RESET);
+          println("Successful Login! " + Console.YELLOW + "Welcome Admin, " + namefromdb + "!"+Console.RESET);
           println("====================================")
           println("Admin Dashboard")
           println("====================================")
